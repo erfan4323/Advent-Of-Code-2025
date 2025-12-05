@@ -1,11 +1,7 @@
-﻿using System.Text;
-
-namespace AdventOfCode;
+﻿namespace AdventOfCode;
 
 public class Day4: IBase
 {
-	private static readonly List<string> Inputs = File.ReadAllLines("Day4_Data.txt").ToList();
-	
 	private static readonly char[][] Grid = File
 	                                        .ReadAllLines("Day4_Data.txt")
 	                                        .Select(line => line.ToCharArray())
@@ -13,14 +9,13 @@ public class Day4: IBase
 
 	private static readonly int Rows = Grid.Length;
 	private static readonly int Cols = Grid[0].Length;
-	private readonly int _maxX = Rows - 1;
-	private readonly int _maxY = Cols - 1;
 
-	private static readonly (int dx, int dy)[] Directions = {
+	private static readonly (int dx, int dy)[] Directions =
+	[
 		(-1,-1), (-1,0), (-1,1),
-		(0,-1),          (0,1),
+		(0,-1),                (0,1),
 		(1,-1),  (1,0),  (1,1)
-	};
+	];
 	
 	public void Lvl1()
 	{
@@ -70,7 +65,7 @@ public class Day4: IBase
 		Lvl2();
 	}
 	
-	private int CountAtSigns(int x, int y)
+	private static int CountAtSigns(int x, int y)
 	{
 		int count = 0;
 		foreach (var (dx, dy) in Directions)
