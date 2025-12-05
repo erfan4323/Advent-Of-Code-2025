@@ -1,6 +1,6 @@
 ﻿namespace AdventOfCode;
 
-public interface Base
+public interface IBase
 {
 	void Lvl1();
 	void Lvl2();

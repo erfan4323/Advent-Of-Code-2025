@@ -1,6 +1,6 @@
 ﻿namespace AdventOfCode;
 
-public class Day1: Base
+public class Day1: IBase
 {
 	private readonly List<string> _instructions = 
 	[
@@ -295,7 +295,7 @@ public class Day1: Base
 	public void Lvl1()
 	{
 		var currIdx = 50;
-		var size = 100;
+		const int size = 100;
 		int steps = 0;
 		int pass = 0;
 		foreach (var input in _instructions) {
@@ -321,7 +321,7 @@ public class Day1: Base
 	public void Lvl2()
 	{
 		var currIdx = 50;
-		var size = 100;
+		const int size = 100;
 		int steps = 0;
 		long pass = 0;
 		foreach (var input in _instructions) {
