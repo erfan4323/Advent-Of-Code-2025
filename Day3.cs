@@ -41,7 +41,7 @@ public class Day3: IBase
 			{
 				int remainingDigits = input.Length - idx;
 				int num = int.Parse(input[idx].ToString());
-				while (stack.Count != 0 && stack.Peek() < num &&(stack.Count - 1 + remainingDigits) >= targetLen)
+				while (stack.Count != 0 && stack.Peek() < num && stack.Count - 1 + remainingDigits >= targetLen)
 				{
 					stack.Pop();
 				}

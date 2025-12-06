@@ -1,5 +1,5 @@
 ﻿using AdventOfCode;
 
-IBase code = new Day3();
+IBase code = new Day6();
 
 code.Run();	

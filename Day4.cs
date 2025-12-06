@@ -9,13 +9,6 @@ public class Day4: IBase
 
 	private static readonly int Rows = Grid.Length;
 	private static readonly int Cols = Grid[0].Length;
-
-	private static readonly (int dx, int dy)[] Directions =
-	[
-		(-1,-1), (-1,0), (-1,1),
-		(0,-1),                (0,1),
-		(1,-1),  (1,0),  (1,1)
-	];
 	
 	public void Lvl1()
 	{
@@ -67,8 +60,13 @@ public class Day4: IBase
 	
 	private static int CountAtSigns(int x, int y)
 	{
+		(int, int)[] directions = [
+			(-1,-1), (-1,0), (-1,1),
+			(0,-1),          (0,1),
+			(1,-1),  (1,0),  (1,1)
+		];
 		int count = 0;
-		foreach (var (dx, dy) in Directions)
+		foreach (var (dx, dy) in directions)
 		{
 			int nx = x + dx;
 			int ny = y + dy;
