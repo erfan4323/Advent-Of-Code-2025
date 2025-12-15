@@ -8,30 +8,7 @@ public class Day8 : IBase
     
 	public void Lvl1()
 	{
-		var pointList = _input.Select(line =>
-		                      {
-			                      var parts = line.Split(',');
-			                      return new Point(
-				                      int.Parse(parts[0]),
-				                      int.Parse(parts[1]),
-				                      int.Parse(parts[2])
-			                      );
-		                      })
-		                      .ToList();
-
-		var edges = new List<(Point a, Point b, long dist)>();
-
-		for (int i = 0; i < pointList.Count; i++)
-			for (int j = i + 1; j < pointList.Count; j++)
-			{
-				edges.Add((
-					pointList[i],
-					pointList[j],
-					DistanceSquared(pointList[i], pointList[j])
-				));
-			}
-		
-		edges.Sort((a, b) => a.dist.CompareTo(b.dist));
+		var (pointList, edges) = PopulateEdges();
 		
 		var uf = new UnionFind<Point>(pointList);
 
@@ -51,31 +28,8 @@ public class Day8 : IBase
 
 	public void Lvl2()
 	{
-		var pointList = _input.Select(line =>
-		                      {
-			                      var parts = line.Split(',');
-			                      return new Point(
-				                      int.Parse(parts[0]),
-				                      int.Parse(parts[1]),
-				                      int.Parse(parts[2])
-			                      );
-		                      })
-		                      .ToList();
+		var (pointList, edges) = PopulateEdges();
 
-		var edges = new List<(Point a, Point b, long dist)>();
-
-		for (int i = 0; i < pointList.Count; i++)
-			for (int j = i + 1; j < pointList.Count; j++)
-			{
-				edges.Add((
-					pointList[i],
-					pointList[j],
-					DistanceSquared(pointList[i], pointList[j])
-				));
-			}
-		
-		edges.Sort((a, b) => a.dist.CompareTo(b.dist));
-		
 		var uf = new UnionFind<Point>(pointList);
 		var componentCount = pointList.Count;
 
@@ -86,7 +40,7 @@ public class Day8 : IBase
 
 			if (componentCount != 1) continue;
 			long ans = (long)a.X * b.X;
-			Console.WriteLine(ans);
+			Console.WriteLine(ans); // 2497445
 			break;
 		}
 	}
@@ -95,6 +49,41 @@ public class Day8 : IBase
 	{
 		Lvl2();
 	}
+	
+	private (List<Point>, List<(Point a, Point b, long dist)>) PopulateEdges()
+	{
+		var points = ParsePoints(_input);
+		var edges = BuildEdges(points);
+
+		return (points, edges);
+	}
+
+	private static List<Point> ParsePoints(IEnumerable<string> input)
+	{
+		return input
+		       .Select(line => line.Split(','))
+		       .Select(parts => new Point(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2])))
+		       .ToList();
+	}
+
+	private static List<(Point a, Point b, long dist)> BuildEdges(IReadOnlyList<Point> points)
+	{
+		int edgeCount = points.Count * (points.Count - 1) / 2;
+		var edges = new List<(Point a, Point b, long dist)>(edgeCount);
+
+		for (int i = 0; i < points.Count; i++)
+			for (int j = i + 1; j < points.Count; j++)
+			{
+				var a = points[i];
+				var b = points[j];
+
+				edges.Add((a, b, DistanceSquared(a, b)));
+			}
+
+		edges.Sort((x, y) => x.dist.CompareTo(y.dist));
+		return edges;
+	}
+
 
 	private static long DistanceSquared(Point a, Point b)
 	{
