@@ -1,14 +1,12 @@
-using System.Reflection.Emit;
-
 namespace AdventOfCode;
 
 class Day7 : IBase
 {
-    private readonly List<string> input = [.. File.ReadLines("Day7_Data.txt")];
+    private readonly List<string> _input = [.. File.ReadLines("Day7_Data.txt")];
 
     public void Lvl1()
     {
-        var charSet = input
+        var charSet = _input
             .Select(line => line.ToCharArray())
             .ToArray();
 
@@ -19,21 +17,24 @@ class Day7 : IBase
             for (int x = 0; x < charSet[y].Length; x++)
             {
 
-                if (TryGet(y - 1, x, charSet, out char up) && (up == 'S' || up == '|'))
+                if (TryGet(y - 1, x, charSet, out char up) && up is 'S' or '|')
                 {
-                    if (charSet[y][x] == '^')
+                    switch (charSet[y][x])
                     {
-                        if (TryGet(y, x - 1, charSet, out char left) && left == '.')
-                            charSet[y][x - 1] = '|';
+                        case '^':
+                        {
+                            if (TryGet(y, x - 1, charSet, out char left) && left == '.')
+                                charSet[y][x - 1] = '|';
 
-                        if (TryGet(y, x + 1, charSet, out char right) && right == '.')
-                            charSet[y][x + 1] = '|';
+                            if (TryGet(y, x + 1, charSet, out char right) && right == '.')
+                                charSet[y][x + 1] = '|';
 
-                        count++;
-                    }
-                    else if (charSet[y][x] == '.')
-                    {
-                        charSet[y][x] = '|';
+                            count++;
+                            break;
+                        }
+                        case '.':
+                            charSet[y][x] = '|';
+                            break;
                     }
                 }
             }
@@ -43,36 +44,51 @@ class Day7 : IBase
 
     public void Lvl2()
     {
-        var grid = input.Select(line => line.ToCharArray()).ToArray();
-
-        Console.WriteLine(CountTimelines(0, 0));
-
-        long CountTimelines(int y, int x)
+        var countExits = 0L;
+        var height = _input.Count;
+        var width = _input[0].Length;
+        var start = (0, _input[0].IndexOf('S'));
+        
+        var beamsQueue =  new Queue<(int Y, int X)>();
+        beamsQueue.Enqueue(start);
+        var beams = new Dictionary<(int Y, int X), long>
         {
-            // out of bounds or blocked
-            if (y < 0 || y >= grid.Length || x < 0 || x >= grid[y].Length)
-                return 0;
+            [start] = 1
+        };
 
-            char c = grid[y][x];
-
-            if (c == '|') return 1;  // already counted
-
-            // splitter
-            if (c == '^')
+        while (beamsQueue.Count > 0)
+        {
+            var beam = beamsQueue.Dequeue();
+            var count = beams[beam];
+            beams.Remove(beam);
+            var (y, x) =  beam;
+            var by = y + 1;
+            if (by >= height)
             {
-                long left = CountTimelines(y, x - 1);
-                long right = CountTimelines(y, x + 1);
-                return left + right;
+                countExits += count;
+                continue;
             }
 
-            // normal empty space
-            if (c == '.')
+            switch (_input[by][x]) 
             {
-                grid[y][x] = '|'; // mark visited
-                return CountTimelines(y + 1, x); // flow down
+                case '.': EnqueueBeam((by, x), count); break;
+                case '^': 
+                    var lx = x - 1; if (lx >= 0 && _input[by][lx] == '.') EnqueueBeam((by, lx), count);
+                    var rx = x + 1; if (rx  < width && _input[by][rx] == '.') EnqueueBeam((by, rx), count);
+                    break;
             }
+        }
 
-            return 0;
+        Console.WriteLine(countExits); // 3223365367809
+
+        return; 
+        
+        void EnqueueBeam((int, int) p, long count)
+        {
+            if (!beams.TryAdd(p, count))
+                beams[p] += count;
+            if (!beamsQueue.Contains(p)) 
+                beamsQueue.Enqueue(p);
         }
     }
 
@@ -90,7 +106,7 @@ class Day7 : IBase
             return true;
         }
 
-        c = default;
+        c = '\0';
         return false;
     }
 
